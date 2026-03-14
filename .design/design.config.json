@@ -1,0 +1,57 @@
+{
+  "frameSrcDir": "design",
+  "styleSheetLinks": [],
+  "designFrameFileNameWithoutPath": "DesignFrame.design.tsx",
+  "designFrameExportName": "DesignFrame",
+  "defaultWrapSpacingValue": "",
+  "defaultPinnedComponents": [],
+  "wrapSpacingProp": "",
+  "wrappersWithSpacingSupport": {},
+  "wrappersWithSpacingSupportDirections": {},
+  "themeOptions": [
+    {
+      "key": "",
+      "text": ""
+    },
+    {
+      "key": "system",
+      "text": "System – forced"
+    },
+    {
+      "key": "dark",
+      "text": "Dark mode – forced"
+    },
+    {
+      "key": "light",
+      "text": "Light mode – forced"
+    }
+  ],
+  "componentLibraries": [
+    {
+      "type": "package",
+      "name": "lucide-react",
+      "displayName": "Lucide Icons",
+      "insertKind": "icon"
+    },
+    {
+      "type": "package",
+      "name": "@radix-ui/react-icons",
+      "displayName": "Radix Icons",
+      "insertKind": "icon"
+    }
+  ],
+  "componentFilter": {
+    "includes": [
+      "components/**/*",
+      "design/**/*",
+      "app/**/*"
+    ],
+    "excludes": [
+      "pages/**/*",
+      "app/**/{layout,page,loading,not-found,error,global-error,route,template,default}.*",
+      "**/*.test.*",
+      "**/*.stories.*",
+      "**/*Provider.*"
+    ]
+  }
+}
