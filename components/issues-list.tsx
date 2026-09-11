@@ -34,6 +34,44 @@ interface Center {
   name: string
 }
 
+function parseMemberReport(description: string) {
+  if (!description.trim().startsWith('Medlemsfejlmelding')) return null
+
+  const content = description.trim().slice('Medlemsfejlmelding'.length).trim()
+  const match = content.match(/^Område:\s*([\s\S]*?)\s+Beskrivelse:\s*([\s\S]*)$/)
+
+  if (!match) return null
+
+  return {
+    area: match[1].trim(),
+    details: match[2].trim(),
+  }
+}
+
+function IssueDescription({ description, detailed = false }: { description: string; detailed?: boolean }) {
+  const memberReport = parseMemberReport(description)
+
+  if (!memberReport) {
+    return <p className="text-sm text-muted-foreground whitespace-pre-wrap">{description}</p>
+  }
+
+  return (
+    <div className={`space-y-3 ${detailed ? 'rounded-lg border bg-muted/30 p-4' : ''}`}>
+      <Badge variant="secondary">Medlemsfejlmelding</Badge>
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,2fr)]">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Område</p>
+          <p className="text-sm font-medium">{memberReport.area}</p>
+        </div>
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Beskrivelse</p>
+          <p className="text-sm whitespace-pre-wrap">{memberReport.details}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refreshTrigger?: number }) {
   // Note: All users can update status, not just admins
   const [issues, setIssues] = useState<IssueReport[]>([])
@@ -330,7 +368,9 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
                 </Button>
               )}
             </div>
-            <p className="text-sm text-muted-foreground mb-2 whitespace-pre-wrap">{issue.description}</p>
+            <div className="mb-2">
+              <IssueDescription description={issue.description} />
+            </div>
             {issue.parts_replaced && (
               <div className="mt-2 text-sm bg-blue-50 p-2 rounded border border-blue-200">
                 <strong>Udskiftede dele:</strong> {issue.parts_replaced}
@@ -361,7 +401,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label>Problem</Label>
-                <p className="text-sm whitespace-pre-wrap">{selectedIssue.description}</p>
+                <IssueDescription description={selectedIssue.description} detailed />
               </div>
 
               <div className="space-y-2">
