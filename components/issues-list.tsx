@@ -330,7 +330,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
                 </Button>
               )}
             </div>
-            <p className="text-sm text-muted-foreground mb-2">{issue.description}</p>
+            <p className="text-sm text-muted-foreground mb-2 whitespace-pre-wrap">{issue.description}</p>
             {issue.parts_replaced && (
               <div className="mt-2 text-sm bg-blue-50 p-2 rounded border border-blue-200">
                 <strong>Udskiftede dele:</strong> {issue.parts_replaced}
@@ -361,7 +361,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label>Problem</Label>
-                <p className="text-sm">{selectedIssue.description}</p>
+                <p className="text-sm whitespace-pre-wrap">{selectedIssue.description}</p>
               </div>
 
               <div className="space-y-2">
