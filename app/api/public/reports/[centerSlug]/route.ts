@@ -71,7 +71,7 @@ async function getSystemReporterId(supabase: ReturnType<typeof createAdminClient
 
   const { data, error: createError } = await supabase.auth.admin.createUser({
     email: SYSTEM_REPORTER_EMAIL,
-    password: `${crypto.randomUUID()}-${crypto.randomUUID()}`,
+    password: crypto.randomUUID(),
     email_confirm: true,
     app_metadata: {
       system_account: true,
