@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { LogoutButton } from '@/components/logout-button'
 import { ReportIssueForm } from '@/components/report-issue-form'
 import { IssuesList } from '@/components/issues-list'
+import { ExportDataForm } from '@/components/export-data-form'
 
 export default function HomePage() {
   const [user, setUser] = useState<any>(null)
@@ -98,7 +99,7 @@ export default function HomePage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid gap-8 md:grid-cols-2">
-          <div>
+          <div className="space-y-8">
             <Card>
               <CardHeader>
                 <CardTitle>Rapportér Problem</CardTitle>
@@ -113,7 +114,7 @@ export default function HomePage() {
             </Card>
           </div>
 
-          <div>
+          <div className="space-y-8">
             <Card>
               <CardHeader>
                 <CardTitle>Seneste Rapporter</CardTitle>
@@ -121,6 +122,16 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <IssuesList isAdmin={isAdmin} refreshTrigger={refreshTrigger} />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Eksportér Data</CardTitle>
+                <CardDescription>Download rapporter for en given periode</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ExportDataForm />
               </CardContent>
             </Card>
           </div>

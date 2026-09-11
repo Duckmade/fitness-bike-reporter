@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { CreateCenterForm } from '@/components/create-center-form'
 import { CentersList } from '@/components/centers-list'
-import { ExportDataForm } from '@/components/export-data-form'
 import { UserManagement } from '@/components/user-management'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -152,16 +151,6 @@ export default function AdminPage() {
           </div>
 
           <div className="space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Eksportér Data</CardTitle>
-                <CardDescription>Download rapporter for en given periode</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ExportDataForm />
-              </CardContent>
-            </Card>
-
             <Card>
               <CardHeader>
                 <CardTitle>Farlig Zone</CardTitle>
