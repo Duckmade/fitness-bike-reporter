@@ -131,7 +131,7 @@ export default function AdminPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Brugeradministration</CardTitle>
-                <CardDescription>Administrer brugerroller</CardDescription>
+                <CardDescription>Opret brugere og administrer deres roller</CardDescription>
               </CardHeader>
               <CardContent>
                 <UserManagement />
