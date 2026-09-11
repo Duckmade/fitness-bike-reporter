@@ -15,7 +15,17 @@ import {
 } from '@/components/ui/select'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { UserPlus } from 'lucide-react'
+import { Trash2, UserPlus } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 interface User {
   id: string
@@ -29,6 +39,8 @@ export function UserManagement() {
   const [isLoading, setIsLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null)
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null)
+  const [userToDelete, setUserToDelete] = useState<User | null>(null)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -143,6 +155,33 @@ export function UserManagement() {
     }
   }
 
+  async function deleteUser() {
+    if (!userToDelete) return
+
+    setDeletingUserId(userToDelete.id)
+
+    try {
+      const response = await adminRequest('/api/admin/users', {
+        method: 'DELETE',
+        body: JSON.stringify({ userId: userToDelete.id }),
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error ?? 'Kunne ikke slette brugeren')
+      }
+
+      setUsers((currentUsers) => currentUsers.filter((user) => user.id !== userToDelete.id))
+      toast.success(`Brugeren ${userToDelete.email} er slettet`)
+      setUserToDelete(null)
+    } catch (error) {
+      console.error('Error deleting user:', error)
+      toast.error(error instanceof Error ? error.message : 'Kunne ikke slette brugeren')
+    } finally {
+      setDeletingUserId(null)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <form onSubmit={createUser} className="space-y-4 rounded-lg border p-4">
@@ -234,21 +273,60 @@ export function UserManagement() {
                 )}
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={updatingUserId === user.id || user.id === currentUserId}
-              onClick={() => toggleAdmin(user.id, user.role)}
-            >
-              {updatingUserId === user.id
-                ? 'Gemmer...'
-                : user.role === 'admin'
-                  ? 'Fjern admin'
-                  : 'Gør til admin'}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={updatingUserId === user.id || user.id === currentUserId}
+                onClick={() => toggleAdmin(user.id, user.role)}
+              >
+                {updatingUserId === user.id
+                  ? 'Gemmer...'
+                  : user.role === 'admin'
+                    ? 'Fjern admin'
+                    : 'Gør til admin'}
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                disabled={deletingUserId === user.id || user.id === currentUserId}
+                onClick={() => setUserToDelete(user)}
+                aria-label={`Slet ${user.email}`}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Slet bruger</span>
+              </Button>
+            </div>
           </div>
         ))}
       </div>
+
+      <AlertDialog open={Boolean(userToDelete)} onOpenChange={(open) => {
+        if (!open && !deletingUserId) setUserToDelete(null)
+      }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Slet bruger?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {userToDelete?.email} bliver slettet permanent og kan ikke længere logge ind.
+              Handlingen kan ikke fortrydes.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={Boolean(deletingUserId)}>Annuller</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(event) => {
+                event.preventDefault()
+                void deleteUser()
+              }}
+              disabled={Boolean(deletingUserId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deletingUserId ? 'Sletter...' : 'Slet bruger'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

@@ -203,3 +203,39 @@ export async function PATCH(request: NextRequest) {
     )
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const auth = await requireAdmin(request)
+
+    if ('error' in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
+    }
+
+    const body = await request.json()
+    const userId = typeof body.userId === 'string' ? body.userId : ''
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Ugyldig bruger' }, { status: 400 })
+    }
+
+    if (userId === auth.user.id) {
+      return NextResponse.json(
+        { error: 'Du kan ikke slette din egen administratorkonto' },
+        { status: 400 }
+      )
+    }
+
+    const { error } = await auth.supabase.auth.admin.deleteUser(userId)
+
+    if (error) throw error
+
+    return NextResponse.json({ userId })
+  } catch (error) {
+    console.error('Error deleting user:', error)
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Kunne ikke slette brugeren' },
+      { status: 500 }
+    )
+  }
+}
