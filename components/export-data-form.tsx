@@ -190,7 +190,7 @@ export function ExportDataForm() {
         if (!report) return ''
         const statusMap: Record<string, string> = {
           'open': 'Aaben',
-          'reported_to_technician': 'Fejlmeldt til tekniker',
+          'reported_to_technician': 'Fejlmeldt til Fitness Engros',
           'resolved': 'Loest'
         }
         return replaceDanishChars(statusMap[report.status] || report.status)

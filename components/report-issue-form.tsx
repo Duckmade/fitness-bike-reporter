@@ -185,7 +185,7 @@ export function ReportIssueForm({ userId, onReportCreated }: { userId: string; o
           <SelectContent>
             <SelectItem value="open">Åben</SelectItem>
             <SelectItem value="pending">Afventer</SelectItem>
-            <SelectItem value="reported_to_technician">Fejlmeldt til tekniker</SelectItem>
+            <SelectItem value="reported_to_technician">Fejlmeldt til Fitness Engros</SelectItem>
             <SelectItem value="resolved">Løst</SelectItem>
           </SelectContent>
         </Select>

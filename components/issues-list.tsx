@@ -245,7 +245,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
     const variants: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success', label: string }> = {
       open: { variant: 'outline', label: 'Åben' },
       pending: { variant: 'default', label: 'Afventer' },
-      reported_to_technician: { variant: 'destructive', label: 'Fejlmeldt til tekniker' },
+      reported_to_technician: { variant: 'destructive', label: 'Fejlmeldt til Fitness Engros' },
       resolved: { variant: 'success', label: 'Løst' }
     }
     const config = variants[status] || { variant: 'outline' as const, label: status }
@@ -290,7 +290,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
               <SelectItem value="all">Alle statusser</SelectItem>
               <SelectItem value="open">Åben</SelectItem>
               <SelectItem value="pending">Afventer</SelectItem>
-              <SelectItem value="reported_to_technician">Fejlmeldt til tekniker</SelectItem>
+              <SelectItem value="reported_to_technician">Fejlmeldt til Fitness Engros</SelectItem>
               <SelectItem value="resolved">Løst</SelectItem>
             </SelectContent>
           </Select>
@@ -384,7 +384,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
                   <SelectContent>
                     <SelectItem value="open">Åben</SelectItem>
                     <SelectItem value="pending">Afventer</SelectItem>
-                    <SelectItem value="reported_to_technician">Fejlmeldt til tekniker</SelectItem>
+                    <SelectItem value="reported_to_technician">Fejlmeldt til Fitness Engros</SelectItem>
                     <SelectItem value="resolved">Løst</SelectItem>
                   </SelectContent>
                 </Select>
