@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -47,12 +47,26 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
   const [showAll, setShowAll] = useState(false)
   const [selectedCenterFilter, setSelectedCenterFilter] = useState<string>('all')
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('all')
+  const showAllRef = useRef(showAll)
+  const centerFilterRef = useRef(selectedCenterFilter)
+  const statusFilterRef = useRef(selectedStatusFilter)
+  const filtersInitialized = useRef(false)
+  const loadRequestId = useRef(0)
   const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
+    showAllRef.current = showAll
+    centerFilterRef.current = selectedCenterFilter
+    statusFilterRef.current = selectedStatusFilter
+
+    if (!filtersInitialized.current) {
+      filtersInitialized.current = true
+      return
+    }
+
     loadIssues(false)
-  }, [refreshTrigger])
+  }, [showAll, selectedCenterFilter, selectedStatusFilter, refreshTrigger])
 
   useEffect(() => {
     loadCenters()
@@ -74,10 +88,6 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
     }
   }, [])
 
-  useEffect(() => {
-    loadIssues(false)
-  }, [showAll, selectedCenterFilter, selectedStatusFilter])
-
   async function loadCenters() {
     const { data, error } = await supabase
       .from('centers')
@@ -92,6 +102,11 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
   }
 
   async function loadIssues(showLoading = true) {
+    const requestId = ++loadRequestId.current
+    const shouldShowAll = showAllRef.current
+    const centerFilter = centerFilterRef.current
+    const statusFilter = statusFilterRef.current
+
     if (showLoading) {
       setIsLoading(true)
     }
@@ -111,21 +126,19 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
       `)
 
     // Apply center filter if selected
-    if (selectedCenterFilter !== 'all') {
-      query = query.eq('bikes.center_id', selectedCenterFilter)
+    if (centerFilter !== 'all') {
+      query = query.eq('bikes.center_id', centerFilter)
     }
 
     // Apply status filter if selected
-    if (selectedStatusFilter !== 'all') {
-      query = query.eq('status', selectedStatusFilter)
-    }
-
-    // Apply limit if not showing all
-    if (!showAll) {
-      query = query.limit(100) // Fetch more to allow proper sorting
+    if (statusFilter !== 'all') {
+      query = query.eq('status', statusFilter)
     }
 
     const { data, error } = await query
+
+    // Ignore older responses if a newer refresh has already started.
+    if (requestId !== loadRequestId.current) return
 
     if (error) {
       console.error('Error loading issues:', error)
@@ -156,12 +169,10 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
         date: d.created_at
       })))
       
-      // Apply limit after sorting if not showing all
-      setIssues(showAll ? sortedData : sortedData.slice(0, 20))
+      // Rank the complete result first, then show either all or the top 20.
+      setIssues(shouldShowAll ? sortedData : sortedData.slice(0, 20))
     }
-    if (showLoading) {
-      setIsLoading(false)
-    }
+    setIsLoading(false)
   }
 
   async function handleUpdateIssue() {
