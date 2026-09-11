@@ -92,7 +92,12 @@ export function ExportDataForm() {
       }
       
       const userMap = new Map<string, string | undefined>(
-        userEmails?.map((u: any) => [u.user_id as string, u.email as string | undefined]) || []
+        userEmails?.map((u: any) => [
+          u.user_id as string,
+          u.email === 'member-reports@bike-reporter.invalid'
+            ? 'Medlemsfejlmelding'
+            : u.email as string | undefined,
+        ]) || []
       )
 
       // Convert to CSV with bikes as columns

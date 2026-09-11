@@ -79,6 +79,7 @@ export async function GET(request: NextRequest) {
     )
 
     const users = authUsers.users
+      .filter((user) => user.app_metadata?.system_account !== true)
       .map((user) => ({
         id: user.id,
         email: user.email ?? 'E-mail mangler',
