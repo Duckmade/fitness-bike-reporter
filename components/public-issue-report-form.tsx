@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -132,7 +132,7 @@ export function PublicIssueReportForm({ centerSlug }: { centerSlug: string }) {
           ) : (
             <>
               <CardHeader>
-                <CardTitle className="text-2xl">Fejlmeld en bike</CardTitle>
+                <CardTitle className="text-2xl">BodyBike fejlmelding</CardTitle>
                 <CardDescription>
                   {formData ? `FitnessX ${formData.center.name}` : 'FitnessX Prismet'}
                 </CardDescription>
@@ -176,6 +176,17 @@ export function PublicIssueReportForm({ centerSlug }: { centerSlug: string }) {
                         })}
                       </div>
                     </fieldset>
+
+                    {selectedCategories.includes('Belastning') && (
+                      <div className="flex gap-3 rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-950">
+                        <Info className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+                        <p>
+                          Hvis du oplever at din FTP er ustabil og springer op og ned, skyldes det i de fleste tilfælde,
+                          at FTP er indstillet forkert. Du er velkommen til at tage en snak med instruktøren om indstilling
+                          af FTP.
+                        </p>
+                      </div>
+                    )}
 
                     <div className="space-y-2">
                       <Label htmlFor="public-description">Beskriv fejlen *</Label>
