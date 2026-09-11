@@ -41,6 +41,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
   const [isLoading, setIsLoading] = useState(true)
   const [selectedIssue, setSelectedIssue] = useState<IssueReport | null>(null)
   const [newStatus, setNewStatus] = useState('')
+  const [partsReplaced, setPartsReplaced] = useState('')
   const [resolutionNotes, setResolutionNotes] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
   const [showAll, setShowAll] = useState(false)
@@ -177,6 +178,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
         .from('issue_reports')
         .update({
           status: newStatus,
+          parts_replaced: partsReplaced.trim() || null,
           resolution_notes: resolutionNotes.trim() || null
         })
         .eq('id', selectedIssue.id)
@@ -186,6 +188,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
       toast.success('Rapport opdateret!')
       setSelectedIssue(null)
       setNewStatus('')
+      setPartsReplaced('')
       setResolutionNotes('')
       // Manually reload to ensure we see the update
       await loadIssues(false)
@@ -223,6 +226,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
   function openIssueDialog(issue: IssueReport) {
     setSelectedIssue(issue)
     setNewStatus(issue.status)
+    setPartsReplaced(issue.parts_replaced || '')
     setResolutionNotes(issue.resolution_notes || '')
   }
 
@@ -349,12 +353,16 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
                 <p className="text-sm">{selectedIssue.description}</p>
               </div>
 
-              {selectedIssue.parts_replaced && (
-                <div className="space-y-2">
-                  <Label>Udskiftede Dele</Label>
-                  <p className="text-sm bg-blue-50 p-2 rounded border border-blue-200">{selectedIssue.parts_replaced}</p>
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="parts-replaced">Udskiftede Dele (valgfrit)</Label>
+                <Textarea
+                  id="parts-replaced"
+                  placeholder="Beskriv eventuelle dele, der er blevet udskiftet..."
+                  value={partsReplaced}
+                  onChange={(e) => setPartsReplaced(e.target.value)}
+                  rows={2}
+                />
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>

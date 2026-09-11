@@ -26,7 +26,6 @@ export function ReportIssueForm({ userId, onReportCreated }: { userId: string; o
   const [selectedCenter, setSelectedCenter] = useState<string>('')
   const [selectedBike, setSelectedBike] = useState<string>('')
   const [description, setDescription] = useState('')
-  const [partsReplaced, setPartsReplaced] = useState('')
   const [status, setStatus] = useState<string>('open')
   const [resolutionNotes, setResolutionNotes] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -97,7 +96,7 @@ export function ReportIssueForm({ userId, onReportCreated }: { userId: string; o
           bike_id: selectedBike,
           user_id: userId,
           description: description.trim(),
-          parts_replaced: partsReplaced.trim() || null,
+          parts_replaced: null,
           status: status,
           resolution_notes: status === 'resolved' ? resolutionNotes.trim() : null
         })
@@ -106,7 +105,6 @@ export function ReportIssueForm({ userId, onReportCreated }: { userId: string; o
 
       toast.success('Problem rapporteret!')
       setDescription('')
-      setPartsReplaced('')
       setSelectedBike('')
       setSelectedCenter('')
       setStatus('open')
@@ -175,17 +173,6 @@ export function ReportIssueForm({ userId, onReportCreated }: { userId: string; o
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
           required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="parts-replaced">Udskiftede Dele (valgfrit)</Label>
-        <Textarea
-          id="parts-replaced"
-          placeholder="Hvis du har udskiftet dele, beskriv hvilke (f.eks. pedaler, sadel, styr)..."
-          value={partsReplaced}
-          onChange={(e) => setPartsReplaced(e.target.value)}
-          rows={2}
         />
       </div>
 
