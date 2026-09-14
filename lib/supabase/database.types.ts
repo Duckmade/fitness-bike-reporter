@@ -45,16 +45,19 @@ export type Database = {
       }
       centers: {
         Row: {
+          bike_type: string | null
           created_at: string | null
           id: string
           name: string
         }
         Insert: {
+          bike_type?: string | null
           created_at?: string | null
           id?: string
           name: string
         }
         Update: {
+          bike_type?: string | null
           created_at?: string | null
           id?: string
           name?: string
