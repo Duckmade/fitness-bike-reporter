@@ -5,11 +5,14 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { BIKE_TYPES, type BikeType } from '@/lib/bike-types'
 
 export function CreateCenterForm() {
   const [centerName, setCenterName] = useState('')
+  const [bikeType, setBikeType] = useState<BikeType | ''>('')
   const [bikeCount, setBikeCount] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
@@ -19,7 +22,7 @@ export function CreateCenterForm() {
     e.preventDefault()
     
     const count = parseInt(bikeCount)
-    if (!centerName.trim() || isNaN(count) || count < 1) {
+    if (!centerName.trim() || !bikeType || isNaN(count) || count < 1) {
       toast.error('Udfyld venligst alle felter korrekt')
       return
     }
@@ -30,7 +33,7 @@ export function CreateCenterForm() {
       // Create center
       const { data: center, error: centerError } = await supabase
         .from('centers')
-        .insert({ name: centerName.trim() })
+        .insert({ name: centerName.trim(), bike_type: bikeType })
         .select()
         .single()
 
@@ -50,6 +53,7 @@ export function CreateCenterForm() {
 
       toast.success(`Center "${centerName}" oprettet med ${count} cykler!`)
       setCenterName('')
+      setBikeType('')
       setBikeCount('')
       router.refresh()
     } catch (error) {
@@ -71,6 +75,20 @@ export function CreateCenterForm() {
           placeholder="F.eks. FitnessX Prismet"
           required
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="bikeType">Cykeltype</Label>
+        <Select value={bikeType} onValueChange={(value) => setBikeType(value as BikeType)} required>
+          <SelectTrigger id="bikeType">
+            <SelectValue placeholder="Vælg cykeltype" />
+          </SelectTrigger>
+          <SelectContent>
+            {BIKE_TYPES.map((type) => (
+              <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">
