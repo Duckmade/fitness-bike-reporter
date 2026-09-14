@@ -8,8 +8,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
 import { Trash2, Edit, Save } from 'lucide-react'
+import { BIKE_TYPES, getBikeTypeLabel, type BikeType } from '@/lib/bike-types'
 
 interface Bike {
   id: string
@@ -19,6 +21,7 @@ interface Bike {
 interface Center {
   id: string
   name: string
+  bike_type: BikeType | null
   bikes: Bike[]
 }
 
@@ -27,6 +30,7 @@ export function CentersList() {
   const [isLoading, setIsLoading] = useState(true)
   const [editingCenter, setEditingCenter] = useState<Center | null>(null)
   const [editName, setEditName] = useState('')
+  const [editBikeType, setEditBikeType] = useState<BikeType | ''>('')
   const [editBikeCount, setEditBikeCount] = useState(0)
   const [isUpdating, setIsUpdating] = useState(false)
   const [editingCenterId, setEditingCenterId] = useState<string | null>(null)
@@ -101,12 +105,13 @@ export function CentersList() {
   function openEditDialog(center: Center) {
     setEditingCenter(center)
     setEditName(center.name)
+    setEditBikeType(center.bike_type ?? '')
     setEditBikeCount(center.bikes.length)
   }
 
   async function updateCenter() {
-    if (!editingCenter || !editName.trim()) {
-      toast.error('Indtast venligst et navn')
+    if (!editingCenter || !editName.trim() || !editBikeType) {
+      toast.error('Indtast et navn og vælg en cykeltype')
       return
     }
 
@@ -120,7 +125,7 @@ export function CentersList() {
     // Update center name
     const { error: nameError } = await supabase
       .from('centers')
-      .update({ name: editName.trim() })
+      .update({ name: editName.trim(), bike_type: editBikeType })
       .eq('id', editingCenter.id)
 
     if (nameError) {
@@ -261,6 +266,9 @@ export function CentersList() {
                 <div className="flex items-center gap-3 flex-1">
                   <span className="font-medium">{center.name}</span>
                   <Badge variant="secondary">{center.bikes.length} cykler</Badge>
+                  <Badge variant={center.bike_type ? 'outline' : 'destructive'}>
+                    {getBikeTypeLabel(center.bike_type)}
+                  </Badge>
                   <div className="ml-auto flex gap-2" onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="ghost"
@@ -349,7 +357,7 @@ export function CentersList() {
             <DialogHeader>
               <DialogTitle>Rediger Center</DialogTitle>
               <DialogDescription>
-                Opdater center navn og antal cykler
+                Opdater center navn, cykeltype og antal cykler
               </DialogDescription>
             </DialogHeader>
             
@@ -362,6 +370,20 @@ export function CentersList() {
                   onChange={(e) => setEditName(e.target.value)}
                   placeholder="F.eks. FitnessX Prismet"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-bike-type">Cykeltype</Label>
+                <Select value={editBikeType} onValueChange={(value) => setEditBikeType(value as BikeType)}>
+                  <SelectTrigger id="edit-bike-type">
+                    <SelectValue placeholder="Vælg cykeltype" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BIKE_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="space-y-2">
