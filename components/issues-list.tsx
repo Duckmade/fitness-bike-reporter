@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { da } from 'date-fns/locale'
@@ -72,8 +71,7 @@ function IssueDescription({ description, detailed = false }: { description: stri
   )
 }
 
-export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refreshTrigger?: number }) {
-  // Note: All users can update status, not just admins
+export function IssuesList({ refreshTrigger }: { refreshTrigger?: number }) {
   const [issues, setIssues] = useState<IssueReport[]>([])
   const [centers, setCenters] = useState<Center[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -90,7 +88,6 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
   const statusFilterRef = useRef(selectedStatusFilter)
   const filtersInitialized = useRef(false)
   const loadRequestId = useRef(0)
-  const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
@@ -223,16 +220,25 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
 
     setIsUpdating(true)
     try {
-      const { error } = await supabase
-        .from('issue_reports')
-        .update({
-          status: newStatus,
-          parts_replaced: partsReplaced.trim() || null,
-          resolution_notes: resolutionNotes.trim() || null
-        })
-        .eq('id', selectedIssue.id)
+      const { data: { session } } = await supabase.auth.getSession()
 
-      if (error) throw error
+      if (!session) throw new Error('Din session er udløbet. Log ind igen.')
+
+      const response = await fetch(`/api/reports/${selectedIssue.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          status: newStatus,
+          partsReplaced: partsReplaced.trim() || null,
+          resolutionNotes: resolutionNotes.trim() || null,
+        }),
+      })
+      const result = await response.json()
+
+      if (!response.ok) throw new Error(result.error || 'Kunne ikke opdatere rapport')
 
       toast.success('Rapport opdateret!')
       setSelectedIssue(null)
@@ -243,7 +249,7 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
       await loadIssues(false)
     } catch (error) {
       console.error('Error updating issue:', error)
-      toast.error('Kunne ikke opdatere rapport')
+      toast.error(error instanceof Error ? error.message : 'Kunne ikke opdatere rapport')
     } finally {
       setIsUpdating(false)
     }
@@ -257,18 +263,25 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
     }
 
     try {
-      const { error } = await supabase
-        .from('issue_reports')
-        .delete()
-        .eq('id', issueId)
+      const { data: { session } } = await supabase.auth.getSession()
 
-      if (error) throw error
+      if (!session) throw new Error('Din session er udløbet. Log ind igen.')
+
+      const response = await fetch(`/api/reports/${issueId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      })
+      const result = await response.json()
+
+      if (!response.ok) throw new Error(result.error || 'Kunne ikke slette rapport')
 
       toast.success('Rapport slettet!')
       await loadIssues(false)
     } catch (error) {
       console.error('Error deleting issue:', error)
-      toast.error('Kunne ikke slette rapport')
+      toast.error(error instanceof Error ? error.message : 'Kunne ikke slette rapport')
     }
   }
 
@@ -358,16 +371,15 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
                 </div>
                 {getStatusBadge(issue.status)}
               </div>
-              {isAdmin && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => handleDeleteIssue(issue.id, e)}
-                  className="ml-2"
-                >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => handleDeleteIssue(issue.id, e)}
+                className="ml-2"
+                aria-label="Slet rapport"
+              >
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
             </div>
             <div className="mb-2">
               <IssueDescription description={issue.description} />
