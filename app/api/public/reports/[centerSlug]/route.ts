@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import type { BikeType } from '@/lib/bike-types'
 
 const PUBLIC_CENTERS: Record<string, string> = {
   prismet: 'Prismet',
@@ -40,7 +41,7 @@ async function getCenterAndBikes(centerSlug: string) {
   const supabase = createAdminClient()
   const { data: center, error: centerError } = await supabase
     .from('centers')
-    .select('id, name')
+    .select('id, name, bike_type')
     .eq('name', centerName)
     .maybeSingle()
 
@@ -108,7 +109,10 @@ export async function GET(
 
     return NextResponse.json(
       {
-        center: result.center,
+        center: {
+          ...result.center,
+          bike_type: result.center.bike_type as BikeType | null,
+        },
         bikes: result.bikes,
         categories: ISSUE_CATEGORIES,
       },
