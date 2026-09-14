@@ -294,14 +294,6 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
     return <div className="text-center py-8 text-muted-foreground">Indlæser...</div>
   }
 
-  if (issues.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        <p>Ingen rapporter endnu.</p>
-      </div>
-    )
-  }
-
   return (
     <>
       <div className="space-y-4 mb-4">
@@ -343,8 +335,17 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
         </div>
       </div>
 
-      <div className="space-y-4 max-h-[600px] overflow-y-auto">
-        {issues.map((issue) => (
+      {issues.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          <p>
+            {selectedCenterFilter !== 'all' || selectedStatusFilter !== 'all'
+              ? 'Ingen rapporter matcher de valgte filtre.'
+              : 'Ingen rapporter endnu.'}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4 max-h-[600px] overflow-y-auto">
+          {issues.map((issue) => (
           <div
             key={issue.id}
             className="border rounded-lg p-4 hover:bg-accent/50 transition-colors cursor-pointer"
@@ -385,8 +386,9 @@ export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refr
               </div>
             )}
           </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {selectedIssue && (
         <Dialog open={!!selectedIssue} onOpenChange={() => setSelectedIssue(null)}>
