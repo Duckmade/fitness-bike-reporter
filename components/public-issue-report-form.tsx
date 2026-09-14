@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import type { BikeType } from '@/lib/bike-types'
 
 interface Bike {
   id: string
@@ -19,6 +20,7 @@ interface PublicFormData {
   center: {
     id: string
     name: string
+    bike_type: BikeType | null
   }
   bikes: Bike[]
   categories: string[]
@@ -177,7 +179,7 @@ export function PublicIssueReportForm({ centerSlug }: { centerSlug: string }) {
                       </div>
                     </fieldset>
 
-                    {selectedCategories.includes('Belastning') && (
+                    {formData.center.bike_type === 'phantom' && selectedCategories.includes('Belastning') && (
                       <div className="flex gap-3 rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-950">
                         <Info className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
                         <p>
