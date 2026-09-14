@@ -4,6 +4,8 @@ import type { BikeType } from '@/lib/bike-types'
 
 const PUBLIC_CENTERS: Record<string, string> = {
   prismet: 'Prismet',
+  noerrebrogade: 'Nørrebrogade',
+  pmv: 'PMV',
 }
 
 const ISSUE_CATEGORIES = [
