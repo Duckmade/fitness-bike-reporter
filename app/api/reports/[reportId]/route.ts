@@ -51,7 +51,7 @@ async function requireReportEditor(request: NextRequest) {
     return { error: 'Du har ikke adgang til at ændre rapporter', status: 403 } as const
   }
 
-  return { supabase } as const
+  return { supabase, role: userRole.role } as const
 }
 
 function isValidReportId(reportId: string) {
@@ -136,6 +136,13 @@ export async function DELETE(
 
     if ('error' in auth) {
       return NextResponse.json({ error: auth.error }, { status: auth.status })
+    }
+
+    if (auth.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Kun administratorer kan slette rapporter' },
+        { status: 403 }
+      )
     }
 
     if (!isValidReportId(params.reportId)) {
