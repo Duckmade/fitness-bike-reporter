@@ -6,6 +6,7 @@ const PUBLIC_CENTERS: Record<string, string> = {
   prismet: 'Prismet',
   noerrebrogade: 'Nørrebrogade',
   pmv: 'PMV',
+  frisko: 'Frisko',
 }
 
 const ISSUE_CATEGORIES = [
