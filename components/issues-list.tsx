@@ -71,7 +71,7 @@ function IssueDescription({ description, detailed = false }: { description: stri
   )
 }
 
-export function IssuesList({ refreshTrigger }: { refreshTrigger?: number }) {
+export function IssuesList({ isAdmin, refreshTrigger }: { isAdmin: boolean; refreshTrigger?: number }) {
   const [issues, setIssues] = useState<IssueReport[]>([])
   const [centers, setCenters] = useState<Center[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -371,15 +371,17 @@ export function IssuesList({ refreshTrigger }: { refreshTrigger?: number }) {
                 </div>
                 {getStatusBadge(issue.status)}
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => handleDeleteIssue(issue.id, e)}
-                className="ml-2"
-                aria-label="Slet rapport"
-              >
-                <Trash2 className="h-4 w-4 text-destructive" />
-              </Button>
+              {isAdmin && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => handleDeleteIssue(issue.id, e)}
+                  className="ml-2"
+                  aria-label="Slet rapport"
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              )}
             </div>
             <div className="mb-2">
               <IssueDescription description={issue.description} />
