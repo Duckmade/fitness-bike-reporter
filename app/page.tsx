@@ -121,7 +121,7 @@ export default function HomePage() {
                 <CardDescription>Oversigt over indberettede problemer</CardDescription>
               </CardHeader>
               <CardContent>
-                <IssuesList refreshTrigger={refreshTrigger} />
+                <IssuesList isAdmin={isAdmin} refreshTrigger={refreshTrigger} />
               </CardContent>
             </Card>
 
