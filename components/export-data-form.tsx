@@ -14,6 +14,27 @@ interface Center {
   name: string
 }
 
+interface ExportBike {
+  id: string
+  bike_number: number
+}
+
+interface ExportReport {
+  created_at: string | null
+  description: string
+  parts_replaced: string | null
+  resolution_notes: string | null
+  status: string
+  user_id: string
+  bikes: {
+    bike_number: number
+    center_id: string
+    centers: {
+      name: string
+    }
+  }
+}
+
 export function ExportDataForm() {
   const [centers, setCenters] = useState<Center[]>([])
   const [selectedCenter, setSelectedCenter] = useState<string>('')
@@ -92,11 +113,11 @@ export function ExportDataForm() {
       }
       
       const userMap = new Map<string, string | undefined>(
-        userEmails?.map((u: any) => [
-          u.user_id as string,
+        userEmails?.map((u: { user_id: string; email: string }) => [
+          u.user_id,
           u.email === 'member-reports@bike-reporter.invalid'
             ? 'Medlemsfejlmelding'
-            : u.email as string | undefined,
+            : u.email,
         ]) || []
       )
 
@@ -135,8 +156,8 @@ export function ExportDataForm() {
   }
 
   function convertToBikeHistoryCSV(
-    reports: any[], 
-    bikes: any[], 
+  reports: ExportReport[],
+  bikes: ExportBike[],
     centerName: string, 
     startDate: string, 
     endDate: string,
@@ -146,7 +167,7 @@ export function ExportDataForm() {
     const title = replaceDanishChars(`${centerName} - ${format(new Date(startDate), 'dd/MM/yyyy')} til ${format(new Date(endDate), 'dd/MM/yyyy')}`)
     
     // Group reports by bike
-    const reportsByBike = new Map<number, any[]>()
+    const reportsByBike = new Map<number, ExportReport[]>()
     reports.forEach(report => {
       const bikeNum = report.bikes.bike_number
       if (!reportsByBike.has(bikeNum)) {
@@ -168,7 +189,7 @@ export function ExportDataForm() {
       const dateRow = ['Dato', ...bikes.map(bike => {
         const bikeReports = reportsByBike.get(bike.bike_number) || []
         const report = bikeReports[i]
-        return report ? format(new Date(report.created_at), 'dd/MM/yyyy HH:mm') : ''
+        return report?.created_at ? format(new Date(report.created_at), 'dd/MM/yyyy HH:mm') : ''
       })].join(';')
       dataRows.push(dateRow)
 

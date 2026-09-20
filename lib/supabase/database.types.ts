@@ -49,18 +49,21 @@ export type Database = {
           created_at: string | null
           id: string
           name: string
+          public_slug: string | null
         }
         Insert: {
           bike_type?: string | null
           created_at?: string | null
           id?: string
           name: string
+          public_slug?: string | null
         }
         Update: {
           bike_type?: string | null
           created_at?: string | null
           id?: string
           name?: string
+          public_slug?: string | null
         }
         Relationships: []
       }
@@ -70,6 +73,7 @@ export type Database = {
           created_at: string | null
           description: string
           id: string
+          origin: string
           parts_replaced: string | null
           resolution_notes: string | null
           status: string
@@ -81,6 +85,7 @@ export type Database = {
           created_at?: string | null
           description: string
           id?: string
+          origin?: string
           parts_replaced?: string | null
           resolution_notes?: string | null
           status?: string
@@ -92,6 +97,7 @@ export type Database = {
           created_at?: string | null
           description?: string
           id?: string
+          origin?: string
           parts_replaced?: string | null
           resolution_notes?: string | null
           status?: string
@@ -104,6 +110,38 @@ export type Database = {
             columns: ["bike_id"]
             isOneToOne: false
             referencedRelation: "bikes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_form_visits: {
+        Row: {
+          center_id: string
+          id: string
+          session_id: string
+          source: string
+          visited_at: string
+        }
+        Insert: {
+          center_id: string
+          id?: string
+          session_id: string
+          source?: string
+          visited_at?: string
+        }
+        Update: {
+          center_id?: string
+          id?: string
+          session_id?: string
+          source?: string
+          visited_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_form_visits_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
             referencedColumns: ["id"]
           },
         ]

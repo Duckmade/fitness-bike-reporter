@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { BIKE_TYPES, type BikeType } from '@/lib/bike-types'
+import { createPublicCenterSlug } from '@/lib/public-center-slug'
 
 export function CreateCenterForm() {
   const [centerName, setCenterName] = useState('')
@@ -33,7 +34,11 @@ export function CreateCenterForm() {
       // Create center
       const { data: center, error: centerError } = await supabase
         .from('centers')
-        .insert({ name: centerName.trim(), bike_type: bikeType })
+        .insert({
+          name: centerName.trim(),
+          bike_type: bikeType,
+          public_slug: createPublicCenterSlug(centerName),
+        })
         .select()
         .single()
 

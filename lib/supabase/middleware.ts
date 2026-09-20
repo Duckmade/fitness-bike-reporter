@@ -40,7 +40,8 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const isPublicMemberReport =
     pathname.startsWith('/fejlmelding/') ||
-    pathname.startsWith('/api/public/reports/')
+    pathname.startsWith('/api/public/reports/') ||
+    pathname.startsWith('/api/public/visits/')
 
   if (
     !user &&

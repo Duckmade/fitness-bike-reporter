@@ -38,6 +38,43 @@ export function PublicIssueReportForm({ centerSlug }: { centerSlug: string }) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    async function registerVisit(centerId: string) {
+      const visitKey = `fitness-bike-reporter:visit:${centerId}`
+
+      try {
+        const sessionKey = 'fitness-bike-reporter:public-session-id'
+
+        if (sessionStorage.getItem(visitKey)) return
+
+        let sessionId = sessionStorage.getItem(sessionKey)
+        if (!sessionId) {
+          sessionId = crypto.randomUUID()
+          sessionStorage.setItem(sessionKey, sessionId)
+        }
+
+        sessionStorage.setItem(visitKey, 'pending')
+
+        const response = await fetch(`/api/public/visits/${centerSlug}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId }),
+        })
+
+        if (response.ok) {
+          sessionStorage.setItem(visitKey, 'recorded')
+        } else {
+          sessionStorage.removeItem(visitKey)
+        }
+      } catch (visitError) {
+        try {
+          sessionStorage.removeItem(visitKey)
+        } catch {
+          // Storage may be unavailable. Statistics must never block the form.
+        }
+        console.warn('Visit registration failed:', visitError)
+      }
+    }
+
     async function loadForm() {
       try {
         const response = await fetch(`/api/public/reports/${centerSlug}`, { cache: 'no-store' })
@@ -46,6 +83,7 @@ export function PublicIssueReportForm({ centerSlug }: { centerSlug: string }) {
         if (!response.ok) throw new Error(data.error ?? 'Kunne ikke indlæse siden')
 
         setFormData(data)
+        void registerVisit(data.center.id)
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : 'Kunne ikke indlæse siden')
       } finally {

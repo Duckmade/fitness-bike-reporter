@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CreateCenterForm } from '@/components/create-center-form'
 import { CentersList } from '@/components/centers-list'
 import { UserManagement } from '@/components/user-management'
+import { PublicFormStats } from '@/components/public-form-stats'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -169,6 +170,10 @@ export default function AdminPage() {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        <div className="mt-8">
+          <PublicFormStats />
         </div>
       </main>
     </div>

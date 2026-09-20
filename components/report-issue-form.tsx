@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 interface Center {
@@ -29,7 +28,6 @@ export function ReportIssueForm({ userId, onReportCreated }: { userId: string; o
   const [status, setStatus] = useState<string>('open')
   const [resolutionNotes, setResolutionNotes] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {

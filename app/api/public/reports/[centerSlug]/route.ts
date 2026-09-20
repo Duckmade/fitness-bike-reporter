@@ -2,13 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import type { BikeType } from '@/lib/bike-types'
 
-const PUBLIC_CENTERS: Record<string, string> = {
-  prismet: 'Prismet',
-  noerrebrogade: 'Nørrebrogade',
-  pmv: 'PMV',
-  frisko: 'Frisko',
-}
-
 const ISSUE_CATEGORIES = [
   'Styr',
   'Sadel',
@@ -37,15 +30,13 @@ function createAdminClient() {
 }
 
 async function getCenterAndBikes(centerSlug: string) {
-  const centerName = PUBLIC_CENTERS[centerSlug]
-
-  if (!centerName) return null
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(centerSlug)) return null
 
   const supabase = createAdminClient()
   const { data: center, error: centerError } = await supabase
     .from('centers')
-    .select('id, name, bike_type')
-    .eq('name', centerName)
+    .select('id, name, bike_type, public_slug')
+    .eq('public_slug', centerSlug)
     .maybeSingle()
 
   if (centerError) throw centerError
@@ -183,6 +174,7 @@ export async function POST(
         bike_id: bikeId,
         user_id: systemReporterId,
         description: reportDescription,
+        origin: 'public_report_page',
         parts_replaced: null,
         status: 'open',
         resolution_notes: null,
