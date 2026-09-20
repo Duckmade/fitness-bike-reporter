@@ -174,7 +174,7 @@ export function PublicIssueReportForm({ centerSlug }: { centerSlug: string }) {
               <CardHeader>
                 <CardTitle className="text-2xl">BodyBike fejlmelding</CardTitle>
                 <CardDescription>
-                  {formData ? `FitnessX ${formData.center.name}` : 'FitnessX Prismet'}
+                  {formData ? `FitnessX ${formData.center.name}` : 'FitnessX'}
                 </CardDescription>
               </CardHeader>
               <CardContent>
